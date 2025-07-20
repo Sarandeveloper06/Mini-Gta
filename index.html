@@ -21,11 +21,12 @@
 </head>
 <body>
   <div id="instructions">Click to Start • Use W/A/S/D to Move</div>
-  
-  <script type="module">
-    import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.160.1/build/three.module.js';
-    import { PointerLockControls } from 'https://cdn.jsdelivr.net/npm/three@0.160.1/examples/jsm/controls/PointerLockControls.js';
 
+  <!-- Use non-module Three.js + PointerLockControls -->
+  <script src="https://cdn.jsdelivr.net/npm/three@0.160.1/build/three.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.160.1/examples/js/controls/PointerLockControls.js"></script>
+
+  <script>
     const renderer = new THREE.WebGLRenderer();
     renderer.setSize(window.innerWidth, window.innerHeight);
     document.body.appendChild(renderer.domElement);
@@ -34,7 +35,7 @@
     scene.background = new THREE.Color(0xa0a0a0);
 
     const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
-    const controls = new PointerLockControls(camera, document.body);
+    const controls = new THREE.PointerLockControls(camera, document.body);
 
     document.getElementById('instructions').addEventListener('click', () => {
       controls.lock();
