@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8" />
+  <title>Mini GTA Game</title>
+  <style>
+    body { margin: 0; overflow: hidden; }
+    #instructions {
+      position: absolute;
+      top: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      color: white;
+      font-size: 18px;
+      background: rgba(0,0,0,0.7);
+      padding: 10px;
+      border-radius: 10px;
+      z-index: 10;
+    }
+  </style>
+</head>
+<body>
+  <div id="instructions">Click to Start • Use W/A/S/D to Move</div>
+  
+  <script type="module">
+    import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.160.1/build/three.module.js';
+    import { PointerLockControls } from 'https://cdn.jsdelivr.net/npm/three@0.160.1/examples/jsm/controls/PointerLockControls.js';
+
+    const renderer = new THREE.WebGLRenderer();
+    renderer.setSize(window.innerWidth, window.innerHeight);
+    document.body.appendChild(renderer.domElement);
+
+    const scene = new THREE.Scene();
+    scene.background = new THREE.Color(0xa0a0a0);
+
+    const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+    const controls = new PointerLockControls(camera, document.body);
+
+    document.getElementById('instructions').addEventListener('click', () => {
+      controls.lock();
+    });
+
+    const light = new THREE.DirectionalLight(0xffffff, 1);
+    light.position.set(1, 5, 2);
+    scene.add(light);
+
+    const ground = new THREE.Mesh(
+      new THREE.PlaneGeometry(500, 500),
+      new THREE.MeshPhongMaterial({ color: 0x555555 })
+    );
+    ground.rotation.x = -Math.PI / 2;
+    scene.add(ground);
+
+    scene.add(controls.getObject());
+
+    const keys = { w: false, a: false, s: false, d: false };
+    document.addEventListener('keydown', e => keys[e.key.toLowerCase()] = true);
+    document.addEventListener('keyup', e => keys[e.key.toLowerCase()] = false);
+
+    const clock = new THREE.Clock();
+    function movePlayer(delta) {
+      const speed = 100 * delta;
+      const direction = new THREE.Vector3();
+
+      if (keys.w) direction.z -= 1;
+      if (keys.s) direction.z += 1;
+      if (keys.a) direction.x -= 1;
+      if (keys.d) direction.x += 1;
+
+      direction.normalize();
+      direction.applyEuler(camera.rotation);
+      controls.moveRight(direction.x * speed);
+      controls.moveForward(direction.z * speed);
+    }
+
+    function animate() {
+      requestAnimationFrame(animate);
+      const delta = clock.getDelta();
+      movePlayer(delta);
+      renderer.render(scene, camera);
+    }
+
+    animate();
+  </script>
+</body>
+</html>
